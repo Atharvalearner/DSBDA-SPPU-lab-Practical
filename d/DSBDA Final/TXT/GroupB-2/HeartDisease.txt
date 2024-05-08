@@ -1,0 +1,109 @@
+import numpy as np
+import pandas as pd
+
+df = pd.read_table("C:/Users/darsh/Desktop/Datasets/Group B/heart_disease.txt",delimiter=",")
+df
+
+df = df.drop_duplicates()
+df
+
+df.describe()
+
+# Information about each column data
+df.info()
+
+#Finding null values in each column
+df.isna()
+
+#Finding null values in each column
+df.isnull().sum()
+
+# Replacing missing values with mean
+df.fillna('0', inplace=True)
+df
+
+# Dropping duplicate rows
+df.drop_duplicates(inplace=True)
+df
+
+df.isnull().sum()
+
+subset1 = df.iloc[[0,1,3,6],[0,2]]
+subset1
+
+subset2 = df.iloc[[2,4,5,7],[1,3]]
+subset2
+
+#Method 1 for Merge Data
+Join = subset2.join(subset1)
+Join
+
+#Method 2 for Merge Data
+subset1.merge(right=subset2,how='cross')
+
+#Method 3 for Merge Data
+concatenated = pd.concat([subset1, subset2])
+concatenated
+
+subSet3 = df[['age','cp','chol','thalachh']]
+
+subSet4 = df[['exng','slp','output']]
+
+#Method 4 for Merge Data
+merged_df = subSet3.merge(right=subSet4,how='cross')
+merged_df.head()
+
+#finding square root
+result=np.sqrt(df['age'])
+result
+
+#finding cube root
+result=np.cbrt(df['age'])
+result
+
+#finding square
+result=np.square(df['age'])
+result
+
+#finding cube
+result=np.power(df['age'],3)
+result
+
+#finding natural log
+result=np.log(df['age'])
+result
+
+#finding log 10
+result=np.log10(df['age'])
+result
+
+heart_csv = pd.read_csv('C:/Users/darsh/Desktop/Datasets/Group B/heart_disease.csv')
+heart_csv
+
+heart_csv['slp'] = heart_csv['slp'].clip(0,1)
+heart_csv
+
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report, ConfusionMatrixDisplay,confusion_matrix
+
+X = heart_csv.drop('output', axis=1)
+y = heart_csv['output']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
+
+classifier = DecisionTreeClassifier()
+
+classifier.fit(X_train,y_train)
+
+y_pred = classifier.predict(X_test)
+
+y_pred
+
+print(classification_report(y_test,y_pred))
+
+ConfusionMatrixDisplay.from_predictions(y_test,y_pred)
+
+print(accuracy_score(y_test, y_pred))
+

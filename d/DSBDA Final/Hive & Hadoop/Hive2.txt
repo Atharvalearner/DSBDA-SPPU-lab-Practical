@@ -1,0 +1,104 @@
+-- Creating a database
+CREATE DATABASE IF NOT EXISTS flight_info_db;
+
+-- Creating a table for flight information
+CREATE TABLE IF NOT EXISTS flight_info_db.flights (
+    flight_id INT,
+    flight_date STRING,
+    departure_time STRING,
+    departure_delay INT,
+    arrival_time STRING,
+    arrival_delay INT,
+    origin STRING,
+    destination STRING,
+    PRIMARY KEY (flight_id)
+);
+
+-- Dropping a table
+DROP TABLE IF EXISTS flight_info_db.flights;
+
+-- Altering a table to add a new column
+ALTER TABLE flight_info_db.flights
+ADD COLUMN flight_type STRING;
+
+
+
+-- Creating an external table for flight data
+CREATE EXTERNAL TABLE IF NOT EXISTS flight_info_db.external_flights (
+    flight_id INT,
+    flight_date STRING,
+    departure_time STRING,
+    departure_delay INT,
+    arrival_time STRING,
+    arrival_delay INT,
+    origin STRING,
+    destination STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/path/to/flight_data';
+
+
+
+-- Loading data into the table
+LOAD DATA INPATH '/path/to/flight_data.csv' OVERWRITE INTO TABLE flight_info_db.flights;
+
+-- Inserting new values into the table
+INSERT INTO TABLE flight_info_db.flights
+VALUES (12345, '2024-05-07', '14:00', 10, '16:30', 5, 'JFK', 'LAX', 'International');
+
+-- Joining tables to get flight information
+SELECT f.*, e.flight_type
+FROM flight_info_db.flights f
+JOIN flight_info_db.external_flights e
+ON f.flight_id = e.flight_id;
+
+
+
+-- Creating index on departure_delay column
+CREATE INDEX idx_departure_delay ON TABLE flight_info_db.flights(departure_delay) AS 'BITMAP';
+
+
+
+-- Assuming flight_date is in 'YYYY-MM-DD' format
+SELECT flight_date, AVG(departure_delay) AS avg_departure_delay
+FROM flight_info_db.flights
+WHERE flight_date LIKE '2008%'
+GROUP BY flight_date;
+
+
+
+
+1,2024-05-07,08:00,5,10:30,0,JFK,LAX
+2,2024-05-07,10:30,0,13:00,-5,LAX,JFK
+3,2024-05-08,09:00,10,12:30,15,JFK,SFO
+4,2024-05-08,11:30,-5,15:00,0,SFO,JFK
+5,2024-05-09,12:00,0,14:30,0,LAX,SFO
+6,2024-05-09,14:30,0,17:00,0,SFO,JFK
+
+
+
+
+
+
+
+
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS flight_info_db.external_flights (
+    flight_id INT,
+    flight_date STRING,
+    departure_time STRING,
+    departure_delay INT,
+    arrival_time STRING,
+    arrival_delay INT,
+    origin STRING,
+    destination STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/user/hive/external_data';
+
+
+
+LOAD DATA INPATH '/user/hive/external_data/flight_data.txt' INTO TABLE flight_info_db.external_flights;

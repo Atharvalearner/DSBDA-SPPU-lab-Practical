@@ -1,0 +1,157 @@
+a. Creating,Dropping, and altering Database tables.
+
+-- Creating Database
+CREATE DATABASE IF NOT EXISTS flight_info_system;
+
+-- Using the created database
+USE flight_info_system;
+
+-- Creating a sample table
+CREATE TABLE IF NOT EXISTS sample_table (
+    id INT,
+    name STRING,
+    age INT,
+    city STRING
+);
+
+-- Inserting some sample data
+INSERT INTO sample_table VALUES
+(1, 'John', 25, 'New York'),
+(2, 'Alice', 30, 'Los Angeles'),
+(3, 'Bob', 28, 'Chicago');
+
+-- Displaying the contents of the sample table
+SELECT * FROM sample_table;
+
+-- Dropping the sample table
+DROP TABLE IF EXISTS sample_table;
+
+-- Recreating the sample table with additional columns
+CREATE TABLE IF NOT EXISTS sample_table (
+    id INT,
+    name STRING,
+    age INT,
+    city STRING,
+    occupation STRING,
+    salary FLOAT
+);
+
+-- Altering the sample table to add a new column
+ALTER TABLE sample_table ADD COLUMN email STRING;
+
+-- Displaying the altered table structure
+DESCRIBE sample_table;
+
+-- Dropping the sample table again
+DROP TABLE IF EXISTS sample_table;
+
+
+b. Creating an external Hive table.
+
+-- Creating an external Hive table for flight data
+CREATE EXTERNAL TABLE IF NOT EXISTS external_flight_data (
+    flight_id INT,
+    flight_date DATE,
+    departure_time STRING,
+    departure_delay INT,
+    arrival_time STRING,
+    arrival_delay INT,
+    origin STRING,
+    destination STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/path/to/external/flight/data';
+
+
+c. Load table with data, insert new values and field in the table, Join tables with Hive
+
+-- Create a table
+CREATE TABLE my_table (
+    id INT,
+    name STRING,
+    age INT
+);
+
+-- Load data into the table
+LOAD DATA INPATH '/path/to/datafile' INTO TABLE my_table;
+
+-- Insert new values into the table
+INSERT INTO my_table (id, name, age) VALUES (1, 'John', 30);
+
+-- Add a new field/column to the table
+ALTER TABLE my_table ADD COLUMN email STRING;
+
+-- Create another table
+CREATE TABLE another_table (
+    id INT,
+    email STRING
+);
+
+-- Join tables
+SELECT *
+FROM my_table
+JOIN another_table ON my_table.id = another_table.id;
+
+
+d. Create index on Flight Information Table
+
+CREATE TABLE flight_information (
+    flight_id INT,
+    airline STRING,
+    departure_city STRING,
+    arrival_city STRING,
+    departure_time TIMESTAMP,
+    arrival_time TIMESTAMP
+);
+
+
+-- Assuming you have data in an external file
+LOAD DATA INPATH '/path/to/flight_data.csv' INTO TABLE flight_information;
+
+
+-- Create a bitmap index on the 'airline' column
+CREATE INDEX airline_index ON TABLE flight_information(airline) AS 'BITMAP';
+
+
+e. Find the average departure delay per day in 2008
+
+-- Create a sample table named 'flights' with departure_time and departure_delay columns
+CREATE TABLE flights (
+    departure_time TIMESTAMP,
+    departure_delay INT
+);
+
+-- Insert some sample data into the 'flights' table
+INSERT INTO flights (departure_time, departure_delay) VALUES
+    ('2008-01-01 08:00:00', 5),
+    ('2008-01-01 10:00:00', 10),
+    ('2008-01-01 11:30:00', -5),  -- Assumed early departure
+    ('2008-01-02 09:00:00', 15),
+    ('2008-01-02 10:30:00', 20),
+    ('2008-01-03 08:30:00', 0),   -- No delay
+    ('2008-01-03 12:00:00', 10);
+
+-- Assuming you have a table named 'flights' with columns 'departure_time' and 'departure_delay'
+
+-- Step 1: Filter data for the year 2008
+CREATE TABLE flights_2008 AS
+SELECT *
+FROM flights
+WHERE YEAR(departure_time) = 2008;
+
+-- Step 2: Calculate departure delay for each flight
+CREATE TABLE flights_with_delay AS
+SELECT *,
+       CASE
+           WHEN departure_delay < 0 THEN 0  -- Assuming negative delay means no delay
+           ELSE departure_delay
+       END AS adjusted_delay
+FROM flights_2008;
+
+-- Step 3 & 4: Group by day and calculate average departure delay
+SELECT
+    DATE(departure_time) AS departure_date,
+    AVG(adjusted_delay) AS avg_departure_delay
+FROM flights_with_delay
+GROUP BY DATE(departure_time);

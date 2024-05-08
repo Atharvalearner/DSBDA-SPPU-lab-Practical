@@ -1,0 +1,206 @@
+import pandas as pd
+
+df1 = pd.read_csv('C:/Users/darsh/Desktop/Datasets/Group B/airquality.csv')
+df1
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.hist(df['AQI'].dropna(), bins=20, color='skyblue', edgecolor='black')
+plt.title('Distribution of AQI')
+plt.xlabel('AQI')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.scatter(df['NO'], df['NO2'], alpha=0.5)
+plt.title('Scatter plot of NO vs NO2')
+plt.xlabel('NO')
+plt.ylabel('NO2')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+df['AQI_Bucket'].value_counts().plot(kind='bar', color='salmon')
+plt.title('AQI Bucket Counts')
+plt.xlabel('AQI Bucket')
+plt.ylabel('Count')
+plt.grid(axis='y')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+df['SO2'].plot(kind='kde', color='orange')
+plt.title('KDE plot of SO2 levels')
+plt.xlabel('SO2')
+plt.ylabel('Density')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(8, 8))
+df1['AQI_Bucket'].value_counts().plot(kind='pie', autopct='%1.1f%%', colors=['skyblue', 'salmon', 'orange', 'lightgreen'])
+plt.title('AQI Bucket Distribution')
+plt.ylabel('')
+plt.show()
+
+# Grouping data by AQI bucket and calculating average NO and NO2 levels
+avg_no_by_bucket = df.groupby('AQI_Bucket')['NO'].mean()
+avg_no2_by_bucket = df.groupby('AQI_Bucket')['NO2'].mean()
+
+# Plotting the stacked bar plot
+plt.figure(figsize=(10, 6))
+plt.bar(avg_no_by_bucket.index, avg_no_by_bucket.values, color='skyblue', label='NO')
+plt.bar(avg_no2_by_bucket.index, avg_no2_by_bucket.values, color='salmon', bottom=avg_no_by_bucket.values, label='NO2')
+plt.title('Average NO and NO2 Levels by AQI Bucket')
+plt.xlabel('AQI Bucket')
+plt.ylabel('Average Level')
+plt.xticks(rotation=45)
+plt.legend()
+plt.grid(axis='y')
+plt.show()
+
+# Convert 'Date' column to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Extract month from the date
+df['Month'] = df['Date'].dt.month
+
+# Grouping data by month and extracting SO2 levels
+so2_data = [df[df['Month'] == month]['SO2'].dropna() for month in range(1, 13)]
+
+# Plotting the box plot
+plt.figure(figsize=(10, 6))
+plt.boxplot(so2_data, labels=[str(month) for month in range(1, 13)])
+plt.title('Box plot of SO2 Levels by Month')
+plt.xlabel('Month')
+plt.ylabel('SO2')
+plt.grid(True)
+plt.show()
+
+from pandas.plotting import scatter_matrix
+
+pollutants = ['PM2.5', 'PM10', 'NO', 'NO2', 'CO', 'SO2', 'O3']
+scatter_matrix(df[pollutants], figsize=(12, 12), diagonal='kde')
+plt.suptitle('Scatter Plot Matrix of Pollutants', y=0.95)
+plt.show()
+
+plt.figure(figsize=(12, 8))
+for pollutant in pollutants:
+    plt.hist(df[pollutant].dropna(), bins=20, alpha=0.5, label=pollutant)
+plt.title('Distribution of Pollutants by Station')
+plt.xlabel('Pollutant Level')
+plt.ylabel('Frequency')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Convert 'Date' column to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Extract month from the date
+df['Month'] = df['Date'].dt.month
+
+# Group by month and calculate the average PM2.5 levels
+avg_pm25_by_month = df.groupby('Month')['PM2.5'].mean()
+
+# Plotting the bar plot
+plt.figure(figsize=(10, 6))
+avg_pm25_by_month.plot(kind='bar', color='skyblue')
+plt.title('Average PM2.5 Levels by Month')
+plt.xlabel('Month')
+plt.ylabel('Average PM2.5')
+plt.xticks(rotation=0)
+plt.grid(axis='y')
+plt.show()
+
+import seaborn as sns
+
+plt.figure(figsize=(10, 6))
+sns.histplot(df['PM2.5'], kde=True, color='skyblue')
+plt.title('Distribution of PM2.5 Levels')
+plt.xlabel('PM2.5')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='AQI_Bucket', y='PM10', data=df, palette='Set2')
+plt.title('Box plot of PM10 Levels by AQI Bucket')
+plt.xlabel('AQI Bucket')
+plt.ylabel('PM10')
+plt.grid(True)
+plt.show()
+
+pollutants = ['PM2.5', 'PM10', 'NO', 'NO2', 'CO', 'SO2', 'O3']
+sns.pairplot(df[pollutants], diag_kind='kde', height=2.5)
+plt.suptitle('Pairplot of Pollutants', y=1.02)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.violinplot(x='Month', y='NO2', data=df, palette='coolwarm')
+plt.title('Violin plot of NO2 Levels by Month')
+plt.xlabel('Month')
+plt.ylabel('NO2')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(12, 8))
+sns.swarmplot(x='StationId', y='AQI', data=df, palette='Set2')
+plt.title('Swarm plot of AQI by Station')
+plt.xlabel('Station')
+plt.ylabel('AQI')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 8))
+corr = df[pollutants].corr()
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap of Pollutants')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.lineplot(x='Date', y='AQI', data=df, color='skyblue')
+plt.title('AQI Trend over Time')
+plt.xlabel('Date')
+plt.ylabel('AQI')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(8, 6))
+sns.countplot(x='AQI_Bucket', data=df, palette='Set2')
+plt.title('Count of AQI Buckets')
+plt.xlabel('AQI Bucket')
+plt.ylabel('Count')
+plt.grid(axis='y')
+plt.show()
+
+g = sns.FacetGrid(df, col='StationId', col_wrap=4, height=4)
+g.map(sns.lineplot, 'Date', 'AQI', color='skyblue')
+g.set_titles('{col_name}')
+g.set_xticklabels(rotation=45)
+plt.show()
+
+sns.jointplot(x='PM2.5', y='PM10', data=df, kind='hex', color='skyblue')
+plt.title('Joint plot of PM2.5 and PM10 levels')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Month', y='AQI', data=df, palette='Set2')
+plt.title('Box plot of AQI by Month')
+plt.xlabel('Month')
+plt.ylabel('AQI')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(12, 8))
+sns.lineplot(x='Date', y='value', hue='variable', data=pd.melt(df, id_vars=['Date', 'AQI_Bucket'], value_vars=pollutants), palette='Set2')
+plt.title('Pollutants Trend over Time Grouped by AQI Bucket')
+plt.xlabel('Date')
+plt.ylabel('Pollutant Level')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.legend(title='Pollutant')
+plt.show()
+

@@ -1,0 +1,193 @@
+import pandas as pd
+
+df = pd.read_csv('C:/Users/darsh/Desktop/Datasets/Group B/forestfires.csv')
+df
+
+import matplotlib.pyplot as plt
+
+monthly_counts = df['month'].value_counts().sort_index()
+months = monthly_counts.index
+counts = monthly_counts.values
+
+plt.figure(figsize=(10, 6))
+plt.bar(months, counts, color='skyblue')
+plt.title('Monthly Distribution of Forest Fires')
+plt.xlabel('Month')
+plt.ylabel('Number of Fires')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.scatter(df['temp'], df['area'], color='orange', alpha=0.5)
+plt.title('Average Temperature vs. Area Affected')
+plt.xlabel('Temperature (°C)')
+plt.ylabel('Area Affected')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.hist(df['RH'], bins=20, color='mediumorchid', edgecolor='black', alpha=0.7)
+plt.title('Relative Humidity Distribution')
+plt.xlabel('Relative Humidity (%)')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.show()
+
+# Calculate the mean area affected for each wind speed
+mean_area_by_wind = df.groupby('wind')['area'].mean()
+
+# Plot the line plot
+plt.figure(figsize=(10, 6))
+plt.plot(mean_area_by_wind.index, mean_area_by_wind.values, color='dodgerblue', marker='o')
+plt.title('Mean Area Affected by Wind Speed')
+plt.xlabel('Wind Speed (km/h)')
+plt.ylabel('Mean Area Affected')
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.bar(df['day'], df['area'], color='darkorange', alpha=0.7)
+plt.title('Day vs. Area Affected')
+plt.xlabel('Day')
+plt.ylabel('Area Affected')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()
+
+# Exclude non-numeric columns
+numeric_df = df.select_dtypes(include=['float64', 'int64'])
+
+plt.figure(figsize=(10, 6))
+plt.imshow(numeric_df.corr(), cmap='coolwarm', interpolation='nearest')
+plt.colorbar()
+plt.title('Correlation Matrix')
+plt.xticks(range(len(numeric_df.columns)), numeric_df.columns, rotation=90)
+plt.yticks(range(len(numeric_df.columns)), numeric_df.columns)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+data = [df[df['day'] == day]['FFMC'] for day in df['day'].unique()]
+plt.violinplot(data, showmeans=False, showmedians=True)
+plt.title('FFMC by Day')
+plt.xlabel('Day')
+plt.ylabel('FFMC')
+plt.xticks(range(1, len(df['day'].unique()) + 1), df['day'].unique(), rotation=45)
+plt.grid(True)
+plt.show()
+
+plt.figure(figsize=(10, 6))
+counts = df['month'].value_counts()
+months = counts.index
+plt.bar(months, counts, color='skyblue', edgecolor='black')
+plt.title('Distribution of Forest Fires by Month')
+plt.xlabel('Month')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.grid(axis='y')
+plt.show()
+
+plt.figure(figsize=(8, 8))
+counts = df['day'].value_counts()
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']  
+colors = plt.cm.tab10.colors  
+plt.pie(counts, labels=days, autopct='%1.1f%%', startangle=90, colors=colors)
+plt.title('Distribution of Forest Fires by Day of the Week')
+plt.axis('equal')  
+plt.show()
+
+plt.figure(figsize=(10, 6))
+month_order = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+plt.boxplot([df[df['month'] == month]['wind'] for month in month_order], labels=month_order, patch_artist=True, boxprops=dict(facecolor='lightgreen'))
+plt.title('Wind Speed by Month')
+plt.xlabel('Month')
+plt.ylabel('Wind Speed (km/h)')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()
+
+import seaborn as sns
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(df.select_dtypes(include=['float64', 'int64']).corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.histplot(df['area'], bins=30, kde=True)
+plt.title('Distribution of Forest Fire Areas')
+plt.xlabel('Area')
+plt.ylabel('Frequency')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.countplot(x='month', data=df, order=df['month'].value_counts().index)
+plt.title('Month-wise Total Fires')
+plt.xlabel('Month')
+plt.ylabel('Total Fires')
+plt.show()
+
+plt.figure(figsize=(12, 6))
+sns.boxplot(x='month', y='temp', data=df, order=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+plt.title('Temperature Distribution by Month')
+plt.xlabel('Month')
+plt.ylabel('Temperature')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='temp', y='area', data=df)
+plt.title('Temperature vs. Area')
+plt.xlabel('Temperature')
+plt.ylabel('Area')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='wind', y='area', data=df)
+plt.title('Wind Speed vs. Area')
+plt.xlabel('Wind Speed')
+plt.ylabel('Area')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.countplot(x='day', data=df, order=['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+plt.title('Count of Fires by Day of the Week')
+plt.xlabel('Day')
+plt.ylabel('Total Fires')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.barplot(x='month', y='area', data=df, order=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+plt.title('Average Fire Area by Month')
+plt.xlabel('Month')
+plt.ylabel('Average Area')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='day', y='RH', data=df, order=['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'])
+plt.title('Relative Humidity by Day')
+plt.xlabel('Day')
+plt.ylabel('Relative Humidity')
+plt.show()
+
+plt.figure(figsize=(12, 6))
+sns.violinplot(x='month', y='wind', data=df, order=['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'])
+plt.title('Wind Speed Distribution by Month')
+plt.xlabel('Month')
+plt.ylabel('Wind Speed')
+plt.show()
+
+sns.jointplot(x='temp', y='RH', data=df, kind='hex')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='X', y='Y', data=df, hue='month', palette='viridis')
+plt.title('Distribution of Fire Occurrences by Coordinates')
+plt.xlabel('X Coordinate')
+plt.ylabel('Y Coordinate')
+plt.legend(title='Month')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.kdeplot(data=df['area'], shade=True)
+plt.title('Kernel Density Estimate of Fire Area')
+plt.xlabel('Area')
+plt.show()
+

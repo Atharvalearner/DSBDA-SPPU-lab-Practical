@@ -1,0 +1,38 @@
+1. student@student-HP-Pro-3330-MT:~$ sudo su hduser3
+2. enter password : may be it student
+3. hduser3@student-HP-Pro-3330-MT:~$ cd /usr/local/hive/bin
+4. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ start-dfs.sh
+5. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ start-yarn.sh
+6. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ jps
+7. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ ./hive
+
+1. show tables;
+2. create table passenger1(id int,name string);
+3. insert into passenger1 values(11,'A');
+4. insert into passenger1 values(12,'B');
+5. insert into passenger1 values(13,'C');
+
+6. create table Train1(id int,train_name string,time string);
+7. insert into Train1 values(1,'Rajdhani express','15');
+8. insert into Train1 values(2,'Navjivan express','16');
+9. insert into Train1 values(3,'Shatabdi express','19');
+
+10. create table Schedule1(day string,train_name string,pid int);
+11. insert into Schedule1 values('3 March','Shatabdi express',11);
+12. insert into Schedule1 values('8 March','Navjivan express',12);
+13. insert into Schedule1 values('10 March','Rajdhani express',13);
+
+14. select * from passenger1;
+15. select * from Train1;
+16. select * from Schedule1;
+
+17. select * from Schedule1 JOIN passenger1 on Schedule1.pid=passenger1.id;
+18. select * from Schedule1 JOIN Train1 on Schedule1.train_name=Train1.train_name;
+
+19. alter table table_name add column table_name dataType;
+20. drop table table_name;
+21. select avg(id) from Train1;
+
+22. hive> exit;
+23. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ stop-all.sh
+24. hduser3@student-HP-Pro-3330-MT:/usr/local/hive/bin$ exit
